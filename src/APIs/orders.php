@@ -1,7 +1,7 @@
 <?php
 include '../db.php';
 date_default_timezone_set("Asia/Karachi");
-$d = date('Y-m-d');
+$d = date("Y-m-d H:i:s");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -9,11 +9,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $user = $_POST['userId'];
     $bill = $_POST['bill'];
     $preparationtime = $_POST['pTime'];
-    $cancelationtime = $_POST['cTime'];
     $item_lenght = $_POST["itemLength"];
     $item = $_POST["itemArray"];
 
-    $sql = "INSERT INTO `order` (`ID`, `User`, `Date`, `Bill`, `Served`, `TotalPreparationTime`, `CancellationTime`) VALUES (NULL, '$user', '$d', '$bill', '0', '$preparationtime', '$cancelationtime') ";
+    $sql = "INSERT INTO `order` (`ID`, `User`, `Date`, `Bill`, `Served`, `TotalPreparationTime`) VALUES (NULL, '$user', '$d', '$bill', '0', '$preparationtime') ";
     $sth = $db->query($sql);
     $sql1 = "SELECT * FROM `order` WHERE `User`=$user ORDER BY ID Desc";
     $sth1 = $db->query($sql1);

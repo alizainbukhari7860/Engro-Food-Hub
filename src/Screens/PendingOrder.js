@@ -1,10 +1,17 @@
 import React, { Component } from "react";
-import { Text, View, ImageBackground } from "react-native";
+import { Text, View, ImageBackground, AsyncStorage } from "react-native";
 import CountDown from "react-native-countdown-component";
 
 export default class PendingOrder extends Component {
+  state = {
+    totalTime: null,
+  };
+  componentDidMount = async () => {
+    const totalTime = JSON.parse(await AsyncStorage.getItem("prepTime"));
+    this.setState({ totalTime: totalTime * 60 });
+  };
   render() {
-    return (
+    return this.state.totalTime ? (
       <ImageBackground
         source={require("../Images/back-Copy.jpg")}
         style={{
@@ -15,7 +22,7 @@ export default class PendingOrder extends Component {
         <View>
           <CountDown
             size={30}
-            until={2000}
+            until={this.state.totalTime}
             onFinish={() => alert("Your order is ready!")}
             digitStyle={{
               backgroundColor: "white",
@@ -33,6 +40,6 @@ export default class PendingOrder extends Component {
           />
         </View>
       </ImageBackground>
-    );
+    ) : null;
   }
 }

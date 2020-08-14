@@ -1,15 +1,18 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Image, AsyncStorage } from "react-native";
+import { View, StyleSheet, Image, AsyncStorage, StatusBar } from "react-native";
 import { Actions } from "react-native-router-flux";
 
 export default class SplashScreen extends Component {
   componentDidMount = async () => {
     const isLoggedIn = JSON.parse(await AsyncStorage.getItem("user"));
-    if (isLoggedIn) {
-      Actions.home();
-    } else {
-      Actions.login();
-    }
+
+    setTimeout(() => {
+      if (isLoggedIn) {
+        Actions.internal();
+      } else {
+        Actions.login();
+      }
+    }, 2500);
   };
   render() {
     return (

@@ -6,6 +6,8 @@ import {
   Image,
   ImageBackground,
   Alert,
+  KeyboardAvoidingView,
+  Linking,
 } from "react-native";
 import { TouchableOpacity, TextInput } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -22,13 +24,12 @@ export default class ContactUs extends Component {
         }}
         source={require("../Images/background.jpg")}
       >
-        <View style={styles.container}>
+        <KeyboardAvoidingView behavior="position" style={styles.container}>
           <Image
             style={styles.logo}
             source={require("../Images/contact.png")}
           ></Image>
           <Text style={styles.heading}>Contact Us</Text>
-
           <Form>
             <Textarea
               rowSpan={5}
@@ -45,7 +46,22 @@ export default class ContactUs extends Component {
             />
           </Form>
           <TouchableOpacity
-            onPress={() => alert("Complaint Registered Successfully!")}
+            onPress={() => {
+              Alert.alert(
+                "Complaint Cell",
+                "Your complaint has been successfully submitted to the mess department.",
+                [
+                  {
+                    text: "OK",
+                    onPress: Actions.home,
+                  },
+                ],
+                { cancelable: false }
+              );
+              Linking.openURL(
+                `mailto:corpcomms@engro.com?subject=Customer Complaint&body=123`
+              );
+            }}
           >
             <Button
               rounded
@@ -54,24 +70,34 @@ export default class ContactUs extends Component {
                 width: 150,
                 justifyContent: "center",
                 marginTop: 15,
+                alignSelf: "center",
               }}
             >
-              <Text>SUBMIT</Text>
+              <Text>SEND EMAIL</Text>
             </Button>
           </TouchableOpacity>
-          <Text style={{ marginTop: 20, color: "#fff", fontSize: 18 }}>
-            <Icon style={{ fontSize: 30, color: "#fff" }} active name="phone" />
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+92 21 111 211 211
-          </Text>
-          <Text style={{ marginTop: 10, color: "#fff", fontSize: 16 }}>
-            <Icon
-              style={{ fontSize: 30, color: "#fff" }}
-              active
-              name="envelope"
-            />
-            &nbsp;&nbsp;&nbsp;&nbsp;corpcomms@engro.com
-          </Text>
-        </View>
+          <TouchableOpacity
+            onPress={() => {
+              Linking.openURL(`tel:${"+92 21 111 211 211"}`);
+            }}
+          >
+            <Text
+              style={{
+                alignSelf: "center",
+                marginTop: 30,
+                color: "#fff",
+                fontSize: 18,
+              }}
+            >
+              <Icon
+                style={{ fontSize: 30, color: "#fff" }}
+                active
+                name="phone"
+              />
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+92 21 111 211 211
+            </Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </ImageBackground>
     );
   }
@@ -86,23 +112,26 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    alignItems: "center",
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.7)",
+    alignItems: "center",
   },
   logo: {
-    width: "60%",
+    width: 150,
+    alignSelf: "center",
     height: 170,
     resizeMode: "contain",
     marginTop: 10,
     opacity: 0.7,
   },
   heading: {
+    alignSelf: "center",
     fontSize: 30,
     paddingHorizontal: 10,
     color: "rgba(0, 204, 102,0.9)",
   },
   text: {
+    alignSelf: "center",
     color: "white",
     textAlign: "center",
     marginTop: 40,
@@ -110,6 +139,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 25,
   },
   email: {
+    alignSelf: "center",
     paddingVertical: 10,
     width: "70%",
     height: 50,

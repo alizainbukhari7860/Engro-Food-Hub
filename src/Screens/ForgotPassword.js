@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Image,
   ImageBackground,
-  Alert
+  Alert,
+  KeyboardAvoidingView,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -17,11 +18,11 @@ export default class Login extends Component {
       <ImageBackground
         style={{
           flex: 1,
-          width: "100%"
+          width: "100%",
         }}
         source={require("../Images/background.jpg")}
       >
-        <View style={styles.container}>
+        <KeyboardAvoidingView behavior="position" style={styles.container}>
           <Image
             style={styles.logo}
             source={require("../Images/lock.png")}
@@ -57,7 +58,7 @@ export default class Login extends Component {
               <Text style={{ color: "#fff" }}>Send</Text>
             </Button>
           </TouchableOpacity>
-        </View>
+        </KeyboardAvoidingView>
       </ImageBackground>
     );
   }
@@ -67,40 +68,45 @@ const styles = StyleSheet.create({
   text: {
     color: "white",
     textAlign: "center",
+    alignSelf: "center",
     marginTop: 40,
     fontSize: 14,
-    paddingHorizontal: 25
+    paddingHorizontal: 25,
   },
   button: {
-    width: "100%",
+    width: "50%",
     justifyContent: "center",
+    alignSelf: "center",
     marginTop: 15,
-    backgroundColor: "rgba(0, 204, 102,0.9)"
+    backgroundColor: "rgba(0, 204, 102,0.9)",
   },
   heading: {
     fontSize: 35,
     marginTop: 20,
     fontFamily: "titleFont",
+    alignSelf: "center",
     paddingHorizontal: 10,
-    color: "rgba(0, 204, 102,0.9)"
+    color: "rgba(0, 204, 102,0.9)",
   },
   container: {
     alignItems: "center",
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.7)"
+    backgroundColor: "rgba(0,0,0,0.7)",
   },
   logo: {
-    width: "60%",
+    width: 100,
+    alignSelf: "center",
     height: 170,
     resizeMode: "contain",
     marginTop: 30,
-    opacity: 0.5
+    opacity: 0.5,
   },
   email: {
     paddingVertical: 10,
+    alignSelf: "center",
     width: "70%",
     height: 50,
     paddingLeft: 10,
-    marginTop: 80
-  }
+    marginTop: 80,
+  },
 });

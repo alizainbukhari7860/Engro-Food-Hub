@@ -8,12 +8,12 @@ export default class PreviousOrdersComponent extends Component {
   render() {
     return (
       <Content>
-        <TouchableOpacity onPress={Actions.invoice}>
+        <TouchableOpacity
+          onPress={() => Actions.invoice({ order: this.props.order })}
+        >
           <Card style={style.card}>
             <CardItem>
-              <Text>
-                {this.props.date} ({this.props.time})
-              </Text>
+              <Text>{this.props.Date}</Text>
             </CardItem>
           </Card>
         </TouchableOpacity>

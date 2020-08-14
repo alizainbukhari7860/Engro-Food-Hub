@@ -3,7 +3,14 @@ import { Text, View, Image, StyleSheet, AsyncStorage } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Actions } from "react-native-router-flux";
+import { api } from "../APIs/api";
 export default class DrawerComponent extends Component {
+  previousOrders = async () => {
+    const response = await api.get("/html/APIs/userOrders.php");
+    const user = JSON.parse(await AsyncStorage.getItem("user"));
+
+    return response.data.filter((e) => e.User === user.ID);
+  };
   render() {
     return (
       <ScrollView style={{ backgroundColor: "#fff", paddingTop: 25 }}>
@@ -32,7 +39,13 @@ export default class DrawerComponent extends Component {
           <Text style={styles.text}>Home</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={Actions.profile} style={styles.button}>
+        <TouchableOpacity
+          onPress={async () => {
+            const user = JSON.parse(await AsyncStorage.getItem("user"));
+            Actions.profile({ user });
+          }}
+          style={styles.button}
+        >
           <View style={styles.iconHolder}>
             <Ionicons style={styles.icon} name="md-person"></Ionicons>
           </View>
@@ -57,7 +70,10 @@ export default class DrawerComponent extends Component {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={Actions.previousOrders}
+          onPress={async () => {
+            const orders = await this.previousOrders();
+            Actions.previousOrders({ orders });
+          }}
           style={styles.button}
         >
           <View style={styles.iconHolder}>

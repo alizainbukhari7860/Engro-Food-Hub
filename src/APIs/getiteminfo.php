@@ -37,13 +37,15 @@ $snacksEndtMinute = $result1['endMinute'];
 
 $json = array();
 date_default_timezone_set("Asia/Karachi");
-$d = date('H');
-$m = date('i');
+$d = '13';
+$m = '0';
+//$d = date('H');
+//$m = date('i');
 
 
 if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
 
-    $sql = "SELECT item.id as ITEMID, item.Name as ITEMNAME,item.Price,item.Category,item.PreparationTime,categories.name as CATNAME, categories.*,menu.*,time.*,shift.* FROM `item` JOIN categories on categories.ID=item.Category JOIN menu on menu.ID=categories.Menu join time on time.MenuID=menu.ID join shift on shift.ID=time.Shift where shift.startHour>=$breakfastStartHour and shift.endHour<=$breakfastEndtHour and shift.endMinute<=$breakfastEndtMinute and shift.startMinute>=$breakfastStartMinute";
+    $sql = "SELECT item.id as ITEMID, item.Name as ITEMNAME,item.Price,item.Category,item.PreparationTime,item.Calories,categories.name as CATNAME, categories.*,menu.*,time.*,shift.* FROM `item` JOIN categories on categories.ID=item.Category JOIN menu on menu.ID=categories.Menu join time on time.MenuID=menu.ID join shift on shift.ID=time.Shift where shift.startHour>=$breakfastStartHour and shift.endHour<=$breakfastEndtHour and shift.endMinute<=$breakfastEndtMinute and shift.startMinute>=$breakfastStartMinute";
     $sth = $db->query($sql);
     $rowcount = $sth->num_rows;
     if ($rowcount > 0) {
@@ -51,7 +53,7 @@ if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
 
             $json[] = array(
                 "ID" => $result['ITEMID'], "name" => $result['ITEMNAME'],
-                "Price" => $result['Price'], "PreparationTime" => $result['PreparationTime'],
+                "Price" => $result['Price'], "PreparationTime" => $result['PreparationTime'],"Calories" => $result['Calories'],
                 "Category" => $result['CATNAME']
             );
         }
@@ -68,7 +70,7 @@ if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
     }
 } else if ($d >= $dinnerStartHour and $d <= $dinnerEndtHour ) {
 
-    $sql = "SELECT item.id as ITEMID, item.Name as ITEMNAME,item.Price,item.Category,item.PreparationTime,categories.name as CATNAME, categories.*,menu.*,time.*,shift.* FROM `item` JOIN categories on categories.ID=item.Category JOIN menu on menu.ID=categories.Menu join time on time.MenuID=menu.ID join shift on shift.ID=time.Shift where shift.startHour>=$dinnerStartHour and shift.endHour<=$dinnerEndtHour and shift.endMinute<=$dinnerEndtMinute and shift.startMinute>=$dinnerStartMinute";
+    $sql = "SELECT item.id as ITEMID, item.Name as ITEMNAME,item.Price,item.Category,item.PreparationTime,item.Calories,categories.name as CATNAME, categories.*,menu.*,time.*,shift.* FROM `item` JOIN categories on categories.ID=item.Category JOIN menu on menu.ID=categories.Menu join time on time.MenuID=menu.ID join shift on shift.ID=time.Shift where shift.startHour>=$dinnerStartHour and shift.endHour<=$dinnerEndtHour and shift.endMinute<=$dinnerEndtMinute and shift.startMinute>=$dinnerStartMinute";
     $sth = $db->query($sql);
     $rowcount = $sth->num_rows;
     if ($rowcount > 0) {
@@ -76,7 +78,7 @@ if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
 
             $json[] = array(
                 "ID" => $result['ITEMID'], "name" => $result['ITEMNAME'],
-                "Price" => $result['Price'], "PreparationTime" => $result['PreparationTime'],
+                "Price" => $result['Price'], "PreparationTime" => $result['PreparationTime'],"Calories" => $result['Calories'],
                 "Category" => $result['CATNAME']
             );
         }
@@ -93,7 +95,7 @@ if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
     }
 } else if ($d >= $lunchStartHour and $d <= $lunchEndtHour) {
 
-    $sql = "SELECT item.id as ITEMID, item.Name as ITEMNAME,item.Price,item.Category,item.PreparationTime,categories.name as CATNAME, categories.*,menu.*,time.*,shift.* FROM `item` JOIN categories on categories.ID=item.Category JOIN menu on menu.ID=categories.Menu join time on time.MenuID=menu.ID join shift on shift.ID=time.Shift where shift.startHour>=$lunchStartHour and shift.endHour<=$lunchEndtHour and shift.endMinute<=$lunchEndtMinute and shift.startMinute>=$lunchStartMinute";
+    $sql = "SELECT item.id as ITEMID, item.Name as ITEMNAME,item.Price,item.Category,item.PreparationTime,item.Calories,categories.name as CATNAME, categories.*,menu.*,time.*,shift.* FROM `item` JOIN categories on categories.ID=item.Category JOIN menu on menu.ID=categories.Menu join time on time.MenuID=menu.ID join shift on shift.ID=time.Shift where shift.startHour>=$lunchStartHour and shift.endHour<=$lunchEndtHour and shift.endMinute<=$lunchEndtMinute and shift.startMinute>=$lunchStartMinute";
     $sth = $db->query($sql);
     $rowcount = $sth->num_rows;
     if ($rowcount > 0) {
@@ -101,7 +103,7 @@ if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
 
             $json[] = array(
                 "ID" => $result['ITEMID'], "name" => $result['ITEMNAME'],
-                "Price" => $result['Price'], "PreparationTime" => $result['PreparationTime'],
+                "Price" => $result['Price'], "PreparationTime" => $result['PreparationTime'],"Calories" => $result['Calories'],
                 "Category" => $result['CATNAME']
             );
         }
@@ -118,7 +120,7 @@ if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
     }
 } else if ($d >= $snacksStartHour and $d <= $snacksEndtHour ) {
 
-    $sql = "SELECT item.id as ITEMID, item.Name as ITEMNAME,item.Price,item.Category,item.PreparationTime,categories.name as CATNAME, categories.*,menu.*,time.*,shift.* FROM `item` JOIN categories on categories.ID=item.Category JOIN menu on menu.ID=categories.Menu join time on time.MenuID=menu.ID join shift on shift.ID=time.Shift where shift.startHour>=$snacksStartHour and shift.endHour<=$snacksEndtHour and shift.endMinute<=$snacksEndtMinute and shift.startMinute>=$snacksStartMinute";
+    $sql = "SELECT item.id as ITEMID, item.Name as ITEMNAME,item.Price,item.Category,item.PreparationTime,item.Calories,categories.name as CATNAME, categories.*,menu.*,time.*,shift.* FROM `item` JOIN categories on categories.ID=item.Category JOIN menu on menu.ID=categories.Menu join time on time.MenuID=menu.ID join shift on shift.ID=time.Shift where shift.startHour>=$snacksStartHour and shift.endHour<=$snacksEndtHour and shift.endMinute<=$snacksEndtMinute and shift.startMinute>=$snacksStartMinute";
     $sth = $db->query($sql);
     $rowcount = $sth->num_rows;
     if ($rowcount > 0) {
@@ -126,7 +128,7 @@ if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
 
             $json[] = array(
                 "ID" => $result['ITEMID'], "name" => $result['ITEMNAME'],
-                "Price" => $result['Price'], "PreparationTime" => $result['PreparationTime'],
+                "Price" => $result['Price'], "PreparationTime" => $result['PreparationTime'],"Calories" => $result['Calories'],
                 "Category" => $result['CATNAME']
             );
         }
@@ -143,7 +145,7 @@ if ($d >= $breakfastStartHour and $d <= $breakfastEndtHour ) {
     }
 } else {
     $json[] = array(
-        "Message" => 'Error Its Not time for Breakfast,Lunch,Snacks and Dinner'
+        "Message" => 'Error! This is Not a Time for Breakfast,Lunch,Snacks or Dinner'
     );
     $jsonstring = json_encode($json);
     echo $jsonstring;

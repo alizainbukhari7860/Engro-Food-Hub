@@ -4,7 +4,7 @@ include '../db.php';
 
 $json = array();
 
-        $sql = "SELECT * FROM `members`";
+        $sql = "SELECT * FROM `members` WHERE `isDelete`=0";
 
 
         $sth = $db->query($sql);

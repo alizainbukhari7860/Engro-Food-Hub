@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Container, Content, Card, CardItem, Text } from "native-base";
-import { StyleSheet, ImageBackground } from "react-native";
+import { StyleSheet, ImageBackground, AsyncStorage } from "react-native";
 import { api } from "../APIs/api";
 import {
   Ionicons,
@@ -24,16 +24,6 @@ export default class Profile extends Component {
     ],
   };
 
-  profile = async () => {
-    const response = await api.get("/html/APIs/members.php");
-    console.log(response.data);
-    this.setState({ members: response.data });
-  };
-
-  async componentDidMount() {
-    await this.profile();
-  }
-
   render() {
     return (
       <Container>
@@ -48,33 +38,27 @@ export default class Profile extends Component {
             <Card>
               <CardItem header bordered>
                 <FontAwesome style={style.icon} name="vcard"></FontAwesome>
-                <Text style={style.headerText}>
-                  {this.state.members[0].Username}
-                </Text>
+                <Text style={style.headerText}>{this.props.user.Username}</Text>
               </CardItem>
 
               <CardItem bordered>
                 <Feather style={style.icon} name="hash"></Feather>
-                <Text style={style.text}>
-                  {this.state.members[0].PersonalNumber}
-                </Text>
+                <Text style={style.text}>{this.props.user.PersonalNumber}</Text>
               </CardItem>
 
               <CardItem bordered>
                 <Ionicons style={style.icon} name="md-person"></Ionicons>
-                <Text style={style.text}>
-                  {this.state.members[0].Designation}
-                </Text>
+                <Text style={style.text}>{this.props.user.Designation}</Text>
               </CardItem>
 
               <CardItem bordered>
                 <Ionicons style={style.icon} name="md-home"></Ionicons>
-                <Text style={style.text}>{this.state.members[0].Address}</Text>
+                <Text style={style.text}>{this.props.user.Address}</Text>
               </CardItem>
 
               <CardItem bordered>
                 <Ionicons style={style.icon} name="ios-mail"></Ionicons>
-                <Text style={style.text}>{this.state.members[0].Email}</Text>
+                <Text style={style.text}>{this.props.user.Email}</Text>
               </CardItem>
 
               <CardItem bordered>
@@ -82,15 +66,13 @@ export default class Profile extends Component {
                   style={style.icon}
                   name="phone"
                 ></MaterialCommunityIcons>
-                <Text style={style.text}>
-                  {this.state.members[0].PhoneNumber}
-                </Text>
+                <Text style={style.text}>{this.props.user.PhoneNumber}</Text>
               </CardItem>
 
               <CardItem bordered>
                 <Ionicons style={style.icon} name="ios-car"></Ionicons>
                 <Text style={style.text}>
-                  {this.state.members[0].UserVehicleRegistrationNo}
+                  {this.props.user.UserVehicleRegistrationNo}
                 </Text>
               </CardItem>
             </Card>

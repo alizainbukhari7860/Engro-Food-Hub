@@ -18,6 +18,22 @@ export default class Invoice extends Component {
 
   render() {
     const state = this.state;
+    console.log(this.props.order);
+    var t = this.props.order.Date.split(/[- :]/);
+    var d = new Date(Date.UTC(t[0], t[1] - 1, t[2], t[3], t[4], t[5]));
+    const quantities = this.props.order.quantities.split(",");
+    const prices = this.props.order.prices.split(",");
+    let total = 0;
+    const items = this.props.order.items.split(",").map((item, index) => {
+      total += prices[index] * quantities[index];
+      return [
+        item,
+        quantities[index],
+        prices[index],
+        prices[index] * quantities[index],
+      ];
+    });
+
     return (
       <View style={styles.container}>
         <View
@@ -44,13 +60,19 @@ export default class Invoice extends Component {
         >
           <Text style={{ padding: 5, fontWeight: "bold" }}>
             Name :
-            <Text style={{ fontWeight: "normal" }}> Ali Zain Bukhari</Text>
+            <Text style={{ fontWeight: "normal" }}>
+              {this.props.order.Username}
+            </Text>
           </Text>
           <Text style={{ padding: 5, fontWeight: "bold" }}>
-            Date :<Text style={{ fontWeight: "normal" }}> 17/03/2020</Text>
+            Date :
+            <Text style={{ fontWeight: "normal" }}>{d.toDateString()}</Text>
           </Text>
           <Text style={{ padding: 5, fontWeight: "bold" }}>
-            Time :<Text style={{ fontWeight: "normal" }}> 12:53</Text>
+            Time :
+            <Text style={{ fontWeight: "normal" }}>
+              {d.toLocaleTimeString()}
+            </Text>
           </Text>
         </View>
         <View>
@@ -60,7 +82,7 @@ export default class Invoice extends Component {
               style={styles.head}
               textStyle={styles.text}
             />
-            <Rows data={state.tableData} textStyle={styles.text} />
+            <Rows data={items} textStyle={styles.text} />
           </Table>
         </View>
 
@@ -75,7 +97,8 @@ export default class Invoice extends Component {
             paddingVertical: 5,
           }}
         >
-          TOTAL<Text style={{ fontWeight: "normal" }}> : Rs. 710</Text>
+          TOTAL
+          <Text style={{ fontWeight: "normal" }}> : Rs. {total}</Text>
         </Text>
       </View>
     );

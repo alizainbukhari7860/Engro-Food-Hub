@@ -7,6 +7,7 @@ import {
   StyleSheet,
   AsyncStorage,
   RefreshControl,
+  Alert,
 } from "react-native";
 
 import CartItem from "../Components/CartItem";
@@ -22,10 +23,45 @@ import {
   CardItem,
 } from "native-base";
 import { Actions } from "react-native-router-flux";
+import { api } from "../APIs/api";
+import QueryString from "qs";
 
-var BUTTONS = ["Option 0", "Option 1", "Option 2", "Delete", "Cancel"];
-var DESTRUCTIVE_INDEX = 3;
-var CANCEL_INDEX = 4;
+const staticItems1 = [
+  {
+    name: "Soft Drink",
+    category: "Beverages",
+    Price: 40,
+    ID: 1,
+    Calories: 41,
+  },
+];
+const staticItems2 = [
+  {
+    name: "Mixed Tea",
+    category: "Hot Drinks",
+    Price: 20,
+    ID: 2,
+    Calories: 200,
+  },
+];
+const staticItems3 = [
+  {
+    name: "Mineral Water",
+    category: "Beverages",
+    Price: 30,
+    ID: 3,
+    Calories: 200,
+  },
+];
+const staticItems4 = [
+  {
+    name: "Kachumar Salad",
+    category: "Salads",
+    Price: 40,
+    ID: 4,
+    Calories: 10,
+  },
+];
 
 export default class Home extends Component {
   state = {
@@ -42,7 +78,7 @@ export default class Home extends Component {
   componentDidMount = async () => {
     const dishes = JSON.parse(await AsyncStorage.getItem("dishes"));
     this.setState({
-      cartItems: dishes,
+      cartItems: dishes ? dishes : [],
     });
   };
   deleteFromCart = async (id) => {
@@ -67,10 +103,45 @@ export default class Home extends Component {
       }
     }
   };
+  placeOrder = async () => {
+    const user = JSON.parse(await AsyncStorage.getItem("user"));
+    let total = 0;
+    this.state.cartItems.forEach((e) => {
+      total += e.Price * e.quantity;
+    });
+    let totalTime = 0;
+    this.state.cartItems.forEach((e) => {
+      totalTime += e.PreparationTime * e.quantity;
+    });
+    const itemArray = this.state.cartItems.map((e) => {
+      return [e.ID, e.quantity];
+    });
+    console.log(this.state.cartItems);
+    console.log(itemArray);
+    await api.post(
+      "/html/APIs/orders.php",
+      QueryString.stringify({
+        userId: user.ID,
+        bill: total,
+        pTime: totalTime,
+        itemLength: this.state.cartItems.length,
+        itemArray,
+      })
+    );
+    Alert.alert("Order", "Your Order has Been Placed.", [
+      { text: "OK", style: "cancel" },
+    ]);
+    await AsyncStorage.setItem("prepTime", JSON.stringify(totalTime));
+    Actions.pendingOrder();
+  };
   render() {
     let total = 0;
     this.state.cartItems.forEach((e) => {
       total += e.Price * e.quantity;
+    });
+    let totalCalories = 0;
+    this.state.cartItems.forEach((e) => {
+      totalCalories += Number(e.Calories) * e.quantity;
     });
     return (
       <Container style={{ backgroundColor: "#e9ffe8" }}>
@@ -145,125 +216,242 @@ export default class Home extends Component {
                   marginBottom: 20,
                 }}
               >
-                <TouchableOpacity>
-                  <CardItem
-                    style={{
-                      borderWidth: 0.5,
-                      borderColor: "black",
-                      marginRight: 5,
-                      backgroundColor: "#dbffea",
-                      height: 80,
-                      width: 150,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: "center",
-                      }}
-                    >
-                      <Text style={{ fontWeight: "bold" }}>Soft Drink</Text>
-                      <Text style={{ color: "grey" }}>Beverages</Text>
-                      <Text style={{ color: "grey" }}>Rs. 40</Text>
-                    </View>
-                  </CardItem>
-                </TouchableOpacity>
+                {staticItems1.map((z) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const found = this.state.cartItems.find(
+                          (item) => item.ID === z.ID
+                        );
+                        if (found) {
+                          this.changeQuantity(1, found.ID);
+                        } else {
+                          const itemToAdd = {
+                            ...z,
+                            quantity: 1,
+                            Price: Number(z.Price),
+                          };
+                          const cartItems = [
+                            ...this.state.cartItems,
+                            itemToAdd,
+                          ];
 
-                <TouchableOpacity>
-                  <CardItem
-                    style={{
-                      borderWidth: 0.5,
-                      borderColor: "black",
-                      marginRight: 5,
-                      backgroundColor: "#dbffea",
-                      height: 80,
-                      width: 150,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: "center",
+                          await AsyncStorage.setItem(
+                            "dishes",
+                            JSON.stringify(cartItems)
+                          );
+                          this.setState({
+                            cartItems,
+                          });
+                        }
                       }}
                     >
-                      <Text style={{ fontWeight: "bold" }}>Item 1</Text>
-                      <Text style={{ color: "grey" }}>Category</Text>
-                      <Text style={{ color: "grey" }}>Rs. 100</Text>
-                    </View>
-                  </CardItem>
-                </TouchableOpacity>
+                      <CardItem
+                        style={{
+                          borderWidth: 0.5,
+                          borderColor: "black",
+                          backgroundColor: "#dbffea",
+                          height: 80,
+                          width: 150,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flex: 1,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ fontWeight: "bold" }}>{z.name}</Text>
+                          <Text style={{ color: "grey" }}>{z.category}</Text>
+                          <Text style={{ color: "grey" }}>Rs. {z.Price}</Text>
+                        </View>
+                      </CardItem>
+                    </TouchableOpacity>
+                  );
+                })}
+              </Card>
+              <Card
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: "#e9ffe8",
+                  marginBottom: 20,
+                }}
+              >
+                {staticItems2.map((e) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const found = this.state.cartItems.find(
+                          (item) => item.ID === e.ID
+                        );
+                        if (found) {
+                          this.changeQuantity(1, found.ID);
+                        } else {
+                          const itemToAdd = {
+                            ...e,
+                            quantity: 1,
+                            Price: Number(e.Price),
+                          };
+                          const cartItems = [
+                            ...this.state.cartItems,
+                            itemToAdd,
+                          ];
 
-                <TouchableOpacity>
-                  <CardItem
-                    style={{
-                      borderWidth: 0.5,
-                      borderColor: "black",
-                      marginRight: 5,
-                      backgroundColor: "#dbffea",
-                      height: 80,
-                      width: 150,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: "center",
+                          await AsyncStorage.setItem(
+                            "dishes",
+                            JSON.stringify(cartItems)
+                          );
+                          this.setState({
+                            cartItems,
+                          });
+                        }
                       }}
                     >
-                      <Text style={{ fontWeight: "bold" }}>Item 1</Text>
-                      <Text style={{ color: "grey" }}>Category</Text>
-                      <Text style={{ color: "grey" }}>Rs. 100</Text>
-                    </View>
-                  </CardItem>
-                </TouchableOpacity>
+                      <CardItem
+                        style={{
+                          borderWidth: 0.5,
+                          borderColor: "black",
+                          backgroundColor: "#dbffea",
+                          height: 80,
+                          width: 150,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flex: 1,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ fontWeight: "bold" }}>{e.name}</Text>
+                          <Text style={{ color: "grey" }}>{e.category}</Text>
+                          <Text style={{ color: "grey" }}>Rs. {e.Price}</Text>
+                        </View>
+                      </CardItem>
+                    </TouchableOpacity>
+                  );
+                })}
+              </Card>
+              <Card
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: "#e9ffe8",
+                  marginBottom: 20,
+                }}
+              >
+                {staticItems3.map((x) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const found = this.state.cartItems.find(
+                          (item) => item.ID === x.ID
+                        );
+                        if (found) {
+                          this.changeQuantity(1, found.ID);
+                        } else {
+                          const itemToAdd = {
+                            ...x,
+                            quantity: 1,
+                            Price: Number(x.Price),
+                          };
+                          const cartItems = [
+                            ...this.state.cartItems,
+                            itemToAdd,
+                          ];
 
-                <TouchableOpacity>
-                  <CardItem
-                    style={{
-                      borderWidth: 0.5,
-                      borderColor: "black",
-                      marginRight: 5,
-                      backgroundColor: "#dbffea",
-                      height: 80,
-                      width: 150,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: "center",
+                          await AsyncStorage.setItem(
+                            "dishes",
+                            JSON.stringify(cartItems)
+                          );
+                          this.setState({
+                            cartItems,
+                          });
+                        }
                       }}
                     >
-                      <Text style={{ fontWeight: "bold" }}>Item 1</Text>
-                      <Text style={{ color: "grey" }}>Category</Text>
-                      <Text style={{ color: "grey" }}>Rs. 100</Text>
-                    </View>
-                  </CardItem>
-                </TouchableOpacity>
+                      <CardItem
+                        style={{
+                          borderWidth: 0.5,
+                          borderColor: "black",
+                          backgroundColor: "#dbffea",
+                          height: 80,
+                          width: 150,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flex: 1,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ fontWeight: "bold" }}>{x.name}</Text>
+                          <Text style={{ color: "grey" }}>{x.category}</Text>
+                          <Text style={{ color: "grey" }}>Rs. {x.Price}</Text>
+                        </View>
+                      </CardItem>
+                    </TouchableOpacity>
+                  );
+                })}
+              </Card>
+              <Card
+                style={{
+                  flexDirection: "row",
+                  backgroundColor: "#e9ffe8",
+                  marginBottom: 20,
+                }}
+              >
+                {staticItems4.map((w) => {
+                  return (
+                    <TouchableOpacity
+                      onPress={async () => {
+                        const found = this.state.cartItems.find(
+                          (item) => item.ID === w.ID
+                        );
+                        if (found) {
+                          this.changeQuantity(1, found.ID);
+                        } else {
+                          const itemToAdd = {
+                            ...w,
+                            quantity: 1,
+                            Price: Number(w.Price),
+                          };
+                          const cartItems = [
+                            ...this.state.cartItems,
+                            itemToAdd,
+                          ];
 
-                <TouchableOpacity>
-                  <CardItem
-                    style={{
-                      borderWidth: 0.5,
-                      borderColor: "black",
-                      marginRight: 5,
-                      backgroundColor: "#dbffea",
-                      height: 80,
-                      width: 150,
-                    }}
-                  >
-                    <View
-                      style={{
-                        flex: 1,
-                        alignItems: "center",
+                          await AsyncStorage.setItem(
+                            "dishes",
+                            JSON.stringify(cartItems)
+                          );
+                          this.setState({
+                            cartItems,
+                          });
+                        }
                       }}
                     >
-                      <Text style={{ fontWeight: "bold" }}>Item 1</Text>
-                      <Text style={{ color: "grey" }}>Category</Text>
-                      <Text style={{ color: "grey" }}>Rs. 100</Text>
-                    </View>
-                  </CardItem>
-                </TouchableOpacity>
+                      <CardItem
+                        style={{
+                          borderWidth: 0.5,
+                          borderColor: "black",
+                          backgroundColor: "#dbffea",
+                          height: 80,
+                          width: 150,
+                        }}
+                      >
+                        <View
+                          style={{
+                            flex: 1,
+                            alignItems: "center",
+                          }}
+                        >
+                          <Text style={{ fontWeight: "bold" }}>{w.name}</Text>
+                          <Text style={{ color: "grey" }}>{w.category}</Text>
+                          <Text style={{ color: "grey" }}>Rs. {w.Price}</Text>
+                        </View>
+                      </CardItem>
+                    </TouchableOpacity>
+                  );
+                })}
               </Card>
             </ScrollView>
           </View>
@@ -282,7 +470,9 @@ export default class Home extends Component {
             }}
           >
             Total&nbsp;&nbsp;
-            <Text style={{ color: "grey", fontSize: 12 }}>(including GST)</Text>
+            <Text style={{ color: "grey", fontSize: 12 }}>
+              ({totalCalories} Calories)
+            </Text>
           </Text>
           <Text
             style={{
@@ -295,12 +485,14 @@ export default class Home extends Component {
             Rs. {total}
           </Text>
         </View>
+
         <TouchableOpacity
+          onPress={this.placeOrder}
           style={{
             margin: 10,
           }}
         >
-          <Button rounded style={style.button} onPress={Actions.invoice}>
+          <Button rounded style={style.button}>
             <Text style={style.buttonText}>Place Order</Text>
           </Button>
         </TouchableOpacity>

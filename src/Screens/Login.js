@@ -27,9 +27,9 @@ export default class Login extends Component {
         "&password=" +
         this.state.password
     );
-    if (response.data.ID) {
+    if (response.data?.ID) {
       await AsyncStorage.setItem("user", JSON.stringify(response.data));
-      Actions.home();
+      Actions.internal();
     } else {
       Alert.alert("Invalid Credentials!");
     }
